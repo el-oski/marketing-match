@@ -49,9 +49,16 @@ function dueCards() {
   }));
   return out;
 }
+/* Progreso graduado: una carta vale medio punto al primer acierto y el punto
+   completo al segundo, para que una ronda perfecta ya mueva la barra. */
 function deckProgress(d) {
-  const done = d.cards.reduce((n, _, i) => n + (box(key(d.id, i)) >= 2 ? 1 : 0), 0);
-  return { done: done, total: d.cards.length, pct: Math.round(done / d.cards.length * 100) };
+  let pts = 0, done = 0;
+  d.cards.forEach((_, i) => {
+    const b = Math.min(Math.max(box(key(d.id, i)), 0), 2);
+    pts += b;
+    if (b >= 2) done++;
+  });
+  return { done: done, total: d.cards.length, pct: Math.round(pts / (d.cards.length * 2) * 100) };
 }
 
 /* --------------------------------------------------------------- utils --- */
@@ -103,7 +110,7 @@ function renderHome() {
   if (last) {
     const p = deckProgress(last);
     $('#qa-continue-title').textContent = 'Continuar: ' + last.name;
-    $('#qa-continue-sub').textContent   = p.done + ' de ' + p.total + ' cartas dominadas';
+    $('#qa-continue-sub').textContent   = p.pct + '% de avance · ' + p.done + ' de ' + p.total + ' dominadas';
   } else {
     $('#qa-continue-title').textContent = 'Empezar a entrenar';
     $('#qa-continue-sub').textContent   = DECKS.length + ' barajas · ' +
@@ -119,7 +126,7 @@ function renderHome() {
         '<span class="deck-name">' + esc(d.name) + '</span>' +
         '<span class="deck-blurb">' + esc(d.blurb) + '</span>' +
         '<span class="deck-meter"><i style="width:' + p.pct + '%"></i></span>' +
-        '<span class="deck-meta"><span>' + p.done + '/' + p.total + '</span><span>' + p.pct + '%</span></span>' +
+        '<span class="deck-meta"><span>' + p.done + '/' + p.total + ' dominadas</span><span>' + p.pct + '%</span></span>' +
         '</button>';
     }).join('');
   });
@@ -411,7 +418,8 @@ function finish() {
   const again = $('#result-again');
   if (uniq.length) {
     again.style.display = '';
-    again.textContent = 'Reforzar las ' + uniq.length + ' falladas';
+    again.textContent = uniq.length === 1 ? 'Reforzar la carta fallada'
+                                           : 'Reforzar las ' + uniq.length + ' falladas';
     again.onclick = () => begin({
       title: 'Refuerzo', brief: 'Solo las cartas que fallaste en la ronda anterior.',
       queue: shuffle(uniq), mode: 'review'
