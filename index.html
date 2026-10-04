@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#120d1c">
+<title>MarketingMatch — Entrena conceptos de marketing</title>
+<meta name="description" content="Aprende fundamentos de marketing deslizando cartas. 139 cartas y 94 términos sobre las 4P, CRM, inbound, segmentación, métricas y más.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💡</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="glow" aria-hidden="true"></div>
+
+<!-- ============================ INICIO ============================ -->
+<main id="screen-home" class="screen is-active">
+  <header class="home-head">
+    <div class="brand">
+      <span class="brand-mark">💡</span>
+      <div>
+        <h1>Marketing<span>Match</span></h1>
+        <p class="tagline">Haz match con los conceptos</p>
+      </div>
+    </div>
+    <button id="theme-btn" class="icon-btn" title="Cambiar tema" aria-label="Cambiar tema">◐</button>
+  </header>
+
+  <section class="stats-row" aria-label="Tu progreso">
+    <div class="stat"><b id="st-level">1</b><span>Nivel</span></div>
+    <div class="stat"><b id="st-xp">0</b><span>XP</span></div>
+    <div class="stat"><b id="st-streak">0</b><span>Racha 🔥</span></div>
+    <div class="stat"><b id="st-acc">—</b><span>Acierto</span></div>
+  </section>
+
+  <div class="level-bar"><div id="level-fill"></div><span id="level-hint"></span></div>
+
+  <nav class="quick-actions">
+    <button class="qa qa-primary" data-action="continue">
+      <span class="qa-ico">▶</span>
+      <span class="qa-txt"><b id="qa-continue-title">Empezar a entrenar</b><small id="qa-continue-sub">16 barajas disponibles</small></span>
+    </button>
+    <button class="qa" data-action="review">
+      <span class="qa-ico">🔁</span>
+      <span class="qa-txt"><b>Repaso inteligente</b><small id="qa-review-sub">Sin pendientes</small></span>
+    </button>
+    <button class="qa" data-action="exam">
+      <span class="qa-ico">🏁</span>
+      <span class="qa-txt"><b>Modo examen</b><small>12 cartas al azar, con calificación</small></span>
+    </button>
+    <button class="qa" data-action="glossary">
+      <span class="qa-ico">📖</span>
+      <span class="qa-txt"><b>Glosario</b><small>94 términos para consultar</small></span>
+    </button>
+  </nav>
+
+  <h2 class="section-title">Barajas <small>de tu guía de estudio</small></h2>
+  <div id="decks-guia" class="deck-grid"></div>
+
+  <h2 class="section-title">Barajas <small>complementarias</small></h2>
+  <div id="decks-extra" class="deck-grid"></div>
+
+  <footer class="home-foot">
+    <p>Basado en la <b>Guía de estudio · Fundamentos de marketing</b>, ampliada con temario complementario.</p>
+    <button id="reset-btn" class="link-btn">Borrar mi progreso</button>
+  </footer>
+</main>
+
+<!-- ============================ JUEGO ============================= -->
+<main id="screen-play" class="screen">
+  <header class="play-head">
+    <button class="icon-btn" data-nav="home" aria-label="Volver al inicio">←</button>
+    <div class="play-title">
+      <b id="play-deck-name">Baraja</b>
+      <small id="play-counter">1 / 10</small>
+    </div>
+    <div class="play-score" id="play-score">0 ✓</div>
+  </header>
+
+  <div class="progress"><div id="progress-fill"></div></div>
+
+  <div class="brief" id="brief-box">
+    <button id="brief-toggle" class="brief-toggle" aria-expanded="false">
+      <span>📘 Repasar el tema antes de empezar</span><i>⌄</i>
+    </button>
+    <p id="brief-text"></p>
+  </div>
+
+  <div class="stage">
+    <div class="choice-hint choice-left"  id="hint-left"></div>
+    <div class="choice-hint choice-right" id="hint-right"></div>
+    <div id="card-stack" class="card-stack"></div>
+  </div>
+
+  <div class="controls">
+    <button class="ctl ctl-left"  id="btn-left"><span id="btn-left-label">Izquierda</span></button>
+    <button class="ctl ctl-skip"  id="btn-skip" title="No sé — explícame">?</button>
+    <button class="ctl ctl-right" id="btn-right"><span id="btn-right-label">Derecha</span></button>
+  </div>
+  <p class="kbd-hint">Arrastra la carta, usa los botones o las flechas <kbd>←</kbd> <kbd>→</kbd></p>
+</main>
+
+<!-- ========================= RETROALIMENTACIÓN ===================== -->
+<div id="feedback" class="feedback" role="dialog" aria-live="polite">
+  <div class="fb-card">
+    <div class="fb-badge" id="fb-badge">¡Correcto!</div>
+    <p class="fb-answer" id="fb-answer"></p>
+    <p class="fb-why" id="fb-why"></p>
+    <div class="fb-tip" id="fb-tip"></div>
+    <button class="btn-main" id="fb-next">Siguiente carta</button>
+  </div>
+</div>
+
+<!-- ========================== RESULTADOS ========================== -->
+<main id="screen-result" class="screen">
+  <div class="result-wrap">
+    <div class="result-ring" id="result-ring"><b id="result-pct">0%</b><small>acierto</small></div>
+    <h2 id="result-title">¡Baraja completada!</h2>
+    <p id="result-sub" class="result-sub"></p>
+    <div class="result-grid">
+      <div><b id="rg-ok">0</b><span>Correctas</span></div>
+      <div><b id="rg-bad">0</b><span>Falladas</span></div>
+      <div><b id="rg-xp">0</b><span>XP ganados</span></div>
+    </div>
+    <div id="result-missed" class="result-missed"></div>
+    <div class="result-actions">
+      <button class="btn-main" id="result-again">Reforzar las falladas</button>
+      <button class="btn-ghost" data-nav="home">Volver al inicio</button>
+    </div>
+  </div>
+</main>
+
+<!-- =========================== GLOSARIO ========================== -->
+<main id="screen-glossary" class="screen">
+  <header class="play-head">
+    <button class="icon-btn" data-nav="home" aria-label="Volver al inicio">←</button>
+    <div class="play-title"><b>Glosario</b><small id="gl-count">94 términos</small></div>
+    <span style="width:40px"></span>
+  </header>
+  <div class="search-wrap">
+    <input id="gl-search" type="search" placeholder="Buscar un término o concepto…" autocomplete="off">
+  </div>
+  <div id="gl-list" class="gl-list"></div>
+</main>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
